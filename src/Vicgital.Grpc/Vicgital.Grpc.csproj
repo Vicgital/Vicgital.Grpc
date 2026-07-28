@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net10.0</TargetFramework>
+	  <AssemblyName>Vicgital.Grpc</AssemblyName>
+	  <PackageId>Vicgital.Grpc</PackageId>
+	  <Version>1.0.0</Version>
+	  <Authors>Vicgital</Authors>
+	  <RepositoryUrl>https://github.com/vicgital/Vicgital.Grpc</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageDescription>Shared gRPC hosting and interceptor toolkit for Vicgital services — Kestrel/host configuration, cross-cutting interceptors, and common gRPC plumbing</PackageDescription>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
+	  <PackageReference Include="Vicgital.Core.Configuration" Version="1.0.0" />
+	  <PackageReference Include="Vicgital.Core.Logging" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hosting\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,55 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Vicgital.Core.Logging.Serilog.Configuration;
+using Vicgital.Core.Logging.Serilog.Extensions;
+using Vicgital.Grpc.Interceptors;
+
+namespace Vicgital.Grpc
+{
+    public static class VicgitalGrpcService
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Microsoft.AspNetCore.Builder.WebApplicationBuilder"/> class with preconfigured defaults for Vicgital Grpc Services.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <returns>The <see cref="Microsoft.AspNetCore.Builder.WebApplicationBuilder"/>.</returns>
+        public static WebApplicationBuilder CreateWebApplicationBuilder(
+            IConfiguration config,
+            string[] args)
+        {
+            // Configuration
+            ArgumentNullException.ThrowIfNull(config);
+
+            var builder = WebApplication.CreateBuilder(args);
+
+            // WebHost            
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.AddServerHeader = false;
+                options.ListenAnyIP(50051, o => o.Protocols = HttpProtocols.Http2);
+            });
+
+            builder.Configuration.AddConfiguration(config);
+
+            // Logging
+            builder.Logging.ClearProviders();
+            if (config.GetSection("Serilog") == null)
+                builder.Services.AddSerilogLogging(LoggerConfigurationBuilder.BuildFromConfiguration(config).CreateLogger());
+            else
+                builder.Services.AddSerilogLogging(LoggerConfigurationBuilder.BuildDefault(Serilog.Events.LogEventLevel.Information).CreateLogger());
+
+            // Interceptors
+            builder.Services.AddGrpc(o =>
+            {
+                o.Interceptors.Add<ExceptionHandlerInterceptor>();
+            });
+
+            return builder;
+
+        }
+    }
+}

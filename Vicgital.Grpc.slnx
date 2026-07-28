@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/.deployment/">
+    <File Path=".github/workflows/publish_package.yml" />
+    <File Path="nuget.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Vicgital.Grpc/Vicgital.Grpc.csproj" />
+  </Folder>
+</Solution>
