@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Net;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Vicgital.Core.Logging.Serilog.Configuration;
 using Vicgital.Core.Logging.Serilog.Extensions;
@@ -26,11 +28,17 @@ namespace Vicgital.Grpc
 
             var builder = WebApplication.CreateBuilder(args);
 
-            // WebHost            
+            // WebHost
+            var port = config.GetValue("Grpc:Port", 50051);
+            var host = config.GetValue<string?>("Grpc:Host", null);
+
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.AddServerHeader = false;
-                options.ListenAnyIP(50051, o => o.Protocols = HttpProtocols.Http2);
+                if (string.IsNullOrWhiteSpace(host))
+                    options.ListenAnyIP(port, o => o.Protocols = HttpProtocols.Http2);
+                else
+                    options.Listen(IPAddress.Parse(host), port, o => o.Protocols = HttpProtocols.Http2);
             });
 
             builder.Configuration.AddConfiguration(config);
@@ -46,10 +54,41 @@ namespace Vicgital.Grpc
             builder.Services.AddGrpc(o =>
             {
                 o.Interceptors.Add<ExceptionHandlerInterceptor>();
+                o.Interceptors.Add<ValidationInterceptor>();
             });
+
+            // Reflection
+            builder.Services.AddGrpcReflection();
+
+            // Health checks
+            builder.Services.AddGrpcHealthChecks();
 
             return builder;
 
+        }
+
+        /// <summary>
+        /// Maps Vicgital Grpc infrastructure endpoints (gRPC server reflection and health checks) onto the app.
+        /// Reflection is exposed automatically in Development, and otherwise only when
+        /// <c>Grpc:EnableReflection</c> is explicitly set to <c>true</c> in configuration, since it lets
+        /// any client enumerate the full service/message schema. Health checks are always mapped via the
+        /// standard grpc.health.v1.Health service, backed by whatever checks are registered through
+        /// <see cref="Microsoft.Extensions.DependencyInjection.HealthCheckServiceCollectionExtensions.AddHealthChecks"/>.
+        /// </summary>
+        /// <param name="app">The <see cref="Microsoft.AspNetCore.Builder.WebApplication"/>.</param>
+        /// <returns>The <see cref="Microsoft.AspNetCore.Builder.WebApplication"/>.</returns>
+        public static WebApplication MapVicgitalGrpcEndpoints(this WebApplication app)
+        {
+            ArgumentNullException.ThrowIfNull(app);
+
+            if (app.Environment.IsDevelopment() || app.Configuration.GetValue("Grpc:EnableReflection", false))
+            {
+                app.MapGrpcReflectionService();
+            }
+
+            app.MapGrpcHealthChecksService();
+
+            return app;
         }
     }
 }
