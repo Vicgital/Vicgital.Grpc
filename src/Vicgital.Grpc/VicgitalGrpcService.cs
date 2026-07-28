@@ -20,11 +20,10 @@ namespace Vicgital.Grpc
         /// <param name="args">The command line arguments.</param>
         /// <returns>The <see cref="Microsoft.AspNetCore.Builder.WebApplicationBuilder"/>.</returns>
         public static WebApplicationBuilder CreateWebApplicationBuilder(
-            IConfiguration config,
-            string[] args)
+            string[] args, IConfiguration? config = null)
         {
             // Configuration
-            ArgumentNullException.ThrowIfNull(config);
+            config ??= Core.Configuration.ConfigurationBuilder.BuildConfiguration();
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +47,7 @@ namespace Vicgital.Grpc
             if (config.GetSection("Serilog") == null)
                 builder.Services.AddSerilogLogging(LoggerConfigurationBuilder.BuildFromConfiguration(config).CreateLogger());
             else
-                builder.Services.AddSerilogLogging(LoggerConfigurationBuilder.BuildDefault(Serilog.Events.LogEventLevel.Information).CreateLogger());
+                builder.Services.AddSerilogLogging(LoggerConfigurationBuilder.BuildDefault(Serilog.Events.LogEventLevel.Warning).CreateLogger());
 
             // Interceptors
             builder.Services.AddGrpc(o =>
