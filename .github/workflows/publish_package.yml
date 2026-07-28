@@ -13,6 +13,8 @@ jobs:
     permissions:
       packages: write
       contents: read
+    env:
+      GIT_PACKAGES_READ_ONLY_PAT: ${{ secrets.GIT_PACKAGES_READ_ONLY_PAT }}
     steps:
       - uses: actions/checkout@v4
 
