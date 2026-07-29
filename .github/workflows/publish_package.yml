@@ -12,6 +12,9 @@ jobs:
     permissions:
       packages: write
       contents: read
+    env:
+      GH_PACKAGE_USERNAME: ${{ secrets.GH_PACKAGE_USERNAME }}
+      GH_PACKAGE_TOKEN: ${{ secrets.GH_PACKAGE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
