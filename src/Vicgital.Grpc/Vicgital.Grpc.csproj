@@ -18,6 +18,8 @@
 	  <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
 	  <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.80.0" />
 	  <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.80.0" />
+	  <PackageReference Include="Vicgital.Core.Configuration" Version="1.0.0" />
+	  <PackageReference Include="Vicgital.Core.Logging" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
