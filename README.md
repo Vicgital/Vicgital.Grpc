@@ -22,16 +22,8 @@ The package is published to GitHub Packages. Add the source and credentials to `
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
     <add key="github" value="https://nuget.pkg.github.com/vicgital/index.json" />
   </packageSources>
-  <packageSourceCredentials>
-    <github>
-      <add key="Username" value="vicgital" />
-      <add key="ClearTextPassword" value="%GIT_PACKAGES_READ_ONLY_PAT%" />
-    </github>
-  </packageSourceCredentials>
 </configuration>
 ```
-
-`GIT_PACKAGES_READ_ONLY_PAT` must be set in the environment (a PAT with `read:packages` scope) wherever you restore, including CI.
 
 Then reference the package:
 
