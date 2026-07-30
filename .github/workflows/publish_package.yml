@@ -12,9 +12,6 @@ jobs:
     permissions:
       packages: write
       contents: read
-    env:
-      GH_PACKAGE_USERNAME: ${{ secrets.GH_PACKAGE_USERNAME }}
-      GH_PACKAGE_TOKEN: ${{ secrets.GH_PACKAGE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,8 +19,6 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Pack
-        run: dotnet pack src/Vicgital.Grpc/Vicgital.Grpc.csproj -c Release -o ./nupkg
-
-      - name: Push to GitHub Packages
-        run: dotnet nuget push "./nupkg/*.nupkg" --source "https://nuget.pkg.github.com/vicgital/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+      - uses: Vicgital/cicd/actions/dotnetNugetPublish@main
+        with:
+          startupProject: src/Vicgital.Grpc/Vicgital.Grpc.csproj
