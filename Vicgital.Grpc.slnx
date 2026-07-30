@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/.deployment/">
-    <File Path=".github/workflows/publish_package.yml" />
+    <File Path=".github/workflows/main.yml" />
     <File Path="nuget.config" />
     <File Path="README.md" />
   </Folder>

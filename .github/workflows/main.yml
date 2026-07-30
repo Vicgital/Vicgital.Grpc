@@ -1,0 +1,27 @@
+name: Vicgital.Grpc
+
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  startupProject: "src/Vicgital.Grpc/Vicgital.Grpc.csproj"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+
+      - name: Publish Nuget Package
+        uses: vicgital/cicd/actions/dotnetNugetPublish@main
+        with:
+          startupProject: ${{ env.startupProject }}
+          githubPublishPackageToken: ${{ secrets.GITHUB_TOKEN }}
+          githubPackageUsername: ${{ secrets.GH_PACKAGE_USERNAME }}
+          githubPackageToken: ${{ secrets.GH_PACKAGE_TOKEN }}
